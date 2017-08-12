@@ -1,1 +1,0 @@
-web: java -Dserver.port=$PORT -jar target/gravaGameWeb-0.1.0.jar
