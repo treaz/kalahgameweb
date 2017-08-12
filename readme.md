@@ -11,7 +11,7 @@ The web app is built with:
 * [AngularJS 1.5](https://spring.io/guides/gs/consuming-rest-angularjs/)
 
 #Running the server locally
-Simply run ```mvn spring-boot:run```
+Simply run ```mvn spring-boot:run``` or ```mvn clean package; java -jar target/kalahGameWeb-0.1.0.jar```
 
 #Deploying to heroku
 Use the instructions provided by [Heroku](https://devcenter.heroku.com/articles/deploying-spring-boot-apps-to-heroku) 
