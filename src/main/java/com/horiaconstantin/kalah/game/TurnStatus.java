@@ -5,7 +5,7 @@ import static com.horiaconstantin.kalah.game.KalahBoard.*;
 /**
  * Holds the state of the current player move
  */
-class PlayerTurnStatus {
+class TurnStatus {
     private int indexOfPitInWhichNextStoneWillBePut;
 
     private int stonesInHand;
@@ -14,7 +14,7 @@ class PlayerTurnStatus {
 
     private final Player playingPlayer;
 
-    PlayerTurnStatus(int indexOfPitInWhichNextStoneWillBePut, int stonesInHand, Player currentPlayer) {
+    TurnStatus(int indexOfPitInWhichNextStoneWillBePut, int stonesInHand, Player currentPlayer) {
         this.indexOfPitInWhichNextStoneWillBePut = indexOfPitInWhichNextStoneWillBePut;
         this.stonesInHand = stonesInHand;
         this.currentPlayer = currentPlayer;
@@ -40,7 +40,7 @@ class PlayerTurnStatus {
         stonesInHand--;
     }
 
-    boolean hasStonesInHand() {
+    boolean hasStonesAvailable() {
         return stonesInHand > 0;
     }
 
@@ -73,6 +73,6 @@ class PlayerTurnStatus {
     }
 
     boolean placedLastStoneInOwnPit() {
-        return getCurrentPlayer().equals(playingPlayer) && !hasStonesInHand() && getCurrentPitIndex() != KALAH_PIT_INDEX;
+        return getCurrentPlayer().equals(playingPlayer) && !hasStonesAvailable() && getCurrentPitIndex() != KALAH_PIT_INDEX;
     }
 }

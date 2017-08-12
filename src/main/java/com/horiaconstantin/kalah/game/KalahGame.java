@@ -1,12 +1,9 @@
 package com.horiaconstantin.kalah.game;
 
-import com.google.gson.Gson;
 import com.horiaconstantin.kalah.exceptions.GameStateException;
 import com.horiaconstantin.kalah.exceptions.IllegalMoveException;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.horiaconstantin.kalah.game.KalahBoard.KALAH_PIT_INDEX;
 
@@ -22,7 +19,9 @@ public class KalahGame implements Serializable {
     private Player playerToMove = Player.P1;
     private Player winner = null;
 
-    //TODO add comments to all public methods
+    /**
+     * Initializes a new Kalah game. Player 1 always starts
+     */
     public KalahGame() {
         board = new KalahBoard();
     }
@@ -39,9 +38,9 @@ public class KalahGame implements Serializable {
     public KalahBoard move(Player player, int pitIndex) {
         checkLegalMove(player, pitIndex);
 
-        PlayerTurnStatus ps = getPlayerTurnStatus(player, pitIndex);
+        TurnStatus ps = startPlayerTurn(player, pitIndex);
 
-        while (ps.hasStonesInHand()) {
+        while (ps.hasStonesAvailable()) {
             ps.changeDepositPitLaneIfNeeded();
             if (ps.canPlaceStoneInCurrentPit()) {
                 board.putOneStoneInPit(ps.getCurrentPlayer(), ps.getCurrentPitIndex());
@@ -58,33 +57,36 @@ public class KalahGame implements Serializable {
         return board;
     }
 
+    /**
+     *
+     * @return a key-value JSON containing the player names as keys and an array of their pits as values
+     */
     public String getGameStatusAsString() {
-        Map<String, int[]> serializedBoard = new HashMap<>();
-        for (Player player : getKalahBoard().getPlayers()) {
-            serializedBoard.put(player.name(), getKalahBoard().getPitStonesCountImmutable(player));
-        }
-        Gson gson = new Gson();
-        return gson.toJson(serializedBoard);
+        return getBoard().getBoardStatusAsString();
     }
 
-    KalahBoard getKalahBoard() {
+    KalahBoard getBoard() {
         return board;
     }
 
-    private void applyRuleOfPlacingLastStoneInOwnEmptyPit(PlayerTurnStatus ps) {
+    private void applyRuleOfPlacingLastStoneInOwnEmptyPit(TurnStatus ps) {
         if (lastStonePlacedInEmptyPit(ps)) {
             int stoneCountInOpposingPit = board.countStonesInPit(ps.getNextPlayer(), ps.getOpposingPitIndex());
-            board.addStonesToKalah(ps.getCurrentPlayer(), board.countStonesInPit(ps.getCurrentPlayer(), ps.getCurrentPitIndex()) + stoneCountInOpposingPit);
+            board.addStonesToKalah(ps.getCurrentPlayer(),
+                    board.countStonesInPit(ps.getCurrentPlayer(), ps.getCurrentPitIndex()) + stoneCountInOpposingPit);
 
             board.emptyPlayerPit(ps.getNextPlayer(), ps.getOpposingPitIndex());
             board.emptyPlayerPit(ps.getCurrentPlayer(), ps.getCurrentPitIndex());
         }
     }
 
-    private boolean lastStonePlacedInEmptyPit(PlayerTurnStatus ps) {
+    private boolean lastStonePlacedInEmptyPit(TurnStatus ps) {
         return ps.placedLastStoneInOwnPit() && board.countStonesInPit(ps.getCurrentPlayer(), ps.getCurrentPitIndex()) == 1;
     }
 
+    /**
+     * Verify if the move is allowed according to the game rules
+     */
     private void checkLegalMove(Player player, int pitIndex) {
         if (winner != null) {
             throw new IllegalMoveException(winner + " WON! " + GAME_OVER);
@@ -100,12 +102,15 @@ public class KalahGame implements Serializable {
         }
     }
 
-    private PlayerTurnStatus getPlayerTurnStatus(Player player, int pitIndex) {
+    private TurnStatus startPlayerTurn(Player player, int pitIndex) {
         int stonesPickedUpFromPit = board.countStonesInPit(player, pitIndex);
         board.emptyPlayerPit(player, pitIndex);
-        return new PlayerTurnStatus(pitIndex, stonesPickedUpFromPit, player);
+        return new TurnStatus(pitIndex, stonesPickedUpFromPit, player);
     }
 
+    /**
+     * Called at the end of each turn to decide if someone won
+     */
     private void computeWinner() {
         Player otherPlayer = playerToMove.getNext();
         int totalStonesInPlayerToMovePits = board.getTotalStonesInPits(playerToMove);
@@ -113,9 +118,9 @@ public class KalahGame implements Serializable {
         if (totalStonesInPlayerToMovePits == 0) {
             board.addStonesToKalah(otherPlayer, totalStonesInOtherPlayerPits);
             board.emptyPlayerPits(otherPlayer);
-            if (board.getStoneCountInKalah(playerToMove) > board.getStoneCountInKalah(otherPlayer)) {
+            if (board.getStoneCountInKalahPitFor(playerToMove) > board.getStoneCountInKalahPitFor(otherPlayer)) {
                 winner = playerToMove;
-            } else if (board.getStoneCountInKalah(playerToMove) < board.getStoneCountInKalah(otherPlayer)) {
+            } else if (board.getStoneCountInKalahPitFor(playerToMove) < board.getStoneCountInKalahPitFor(otherPlayer)) {
                 winner = otherPlayer;
             } else {
                 winner = Player.NONE;

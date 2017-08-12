@@ -1,9 +1,6 @@
 package com.horiaconstantin.kalah.game;
 
 import com.horiaconstantin.kalah.exceptions.IllegalMoveException;
-import com.horiaconstantin.kalah.game.KalahBoard;
-import com.horiaconstantin.kalah.game.KalahGame;
-import com.horiaconstantin.kalah.game.Player;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -19,11 +16,11 @@ public class KalahGameTest {
     public void testInitialGameSetup() {
         KalahGame game = new KalahGame();
 
-        assertThat(game.getKalahBoard().getPitStonesCountImmutable(Player.P1)).isEqualTo(new int[]{6, 6, 6, 6, 6, 6, 0});
-        assertThat(game.getKalahBoard().getPitStonesCountImmutable(Player.P2)).isEqualTo(new int[]{6, 6, 6, 6, 6, 6, 0});
+        assertThat(game.getBoard().getPitStonesCountImmutable(Player.P1)).isEqualTo(new int[]{6, 6, 6, 6, 6, 6, 0});
+        assertThat(game.getBoard().getPitStonesCountImmutable(Player.P2)).isEqualTo(new int[]{6, 6, 6, 6, 6, 6, 0});
 
-        assertThat(game.getKalahBoard().getStoneCountInKalah(Player.P1)).isEqualTo(0);
-        assertThat(game.getKalahBoard().getStoneCountInKalah(Player.P2)).isEqualTo(0);
+        assertThat(game.getBoard().getStoneCountInKalahPitFor(Player.P1)).isEqualTo(0);
+        assertThat(game.getBoard().getStoneCountInKalahPitFor(Player.P2)).isEqualTo(0);
     }
 
     @Test
@@ -32,7 +29,7 @@ public class KalahGameTest {
 
         KalahBoard board = game.move(Player.P1, 5);
 
-        assertThat(board.getStoneCountInKalah(Player.P1)).isEqualTo(1);
+        assertThat(board.getStoneCountInKalahPitFor(Player.P1)).isEqualTo(1);
         assertThat(board.getPitStonesCountImmutable(Player.P1)).isEqualTo(new int[]{6, 6, 6, 6, 6, 0, 1});
         assertThat(board.getPitStonesCountImmutable(Player.P2)).isEqualTo(new int[]{7, 7, 7, 7, 7, 6, 0});
         assertThatThrownBy(() -> game.move(Player.P1, 5)).isInstanceOf(IllegalMoveException.class).hasMessageContaining(NOT_YOUR_TURN);

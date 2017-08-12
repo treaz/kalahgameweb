@@ -1,5 +1,7 @@
 package com.horiaconstantin.kalah.game;
 
+import com.google.gson.Gson;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -9,22 +11,32 @@ class KalahBoard implements Serializable {
      * the index of the kalah/home pit
      */
     static final int KALAH_PIT_INDEX = 6;
-    static final int LAST_PIT_INDEX = 5;
+
+    static final int LAST_PIT_INDEX = KALAH_PIT_INDEX - 1;
+    /**
+     * the number of stones that are place at the beginning of the game in each pit
+     */
+    private static final int START_STONES = 6;
     private HashMap<Player, int[]> playerPitsMap = new HashMap<>();
+    private Gson gson = new Gson();
 
     KalahBoard() {
-        playerPitsMap.put(Player.P1, new int[]{6, 6, 6, 6, 6, 6, 0});
-        playerPitsMap.put(Player.P2, new int[]{6, 6, 6, 6, 6, 6, 0});
+        playerPitsMap.put(Player.P1, getStartLinePits());
+        playerPitsMap.put(Player.P2, getStartLinePits());
     }
 
     KalahBoard(Map<Player, int[]> playerPitsMap) {
         this.playerPitsMap = new HashMap<>(playerPitsMap);
     }
 
+    private int[] getStartLinePits(){
+        return new int[]{START_STONES, START_STONES, START_STONES, START_STONES, START_STONES, START_STONES, 0};
+    }
+
     /**
      * @return the number of stones present in the player's kalah/home pit
      */
-    int getStoneCountInKalah(Player player) {
+    int getStoneCountInKalahPitFor(Player player) {
         return playerPitsMap.get(player)[KALAH_PIT_INDEX];
     }
 
@@ -67,7 +79,15 @@ class KalahBoard implements Serializable {
         playerPits[pitIndex]++;
     }
 
-    Set<Player> getPlayers() {
+    private Set<Player> getPlayers() {
         return playerPitsMap.keySet();
+    }
+
+    String getBoardStatusAsString() {
+        Map<String, int[]> board = new HashMap<>();
+        for (Player player : getPlayers()) {
+            board.put(player.name(), getPitStonesCountImmutable(player));
+        }
+        return gson.toJson(board);
     }
 }
