@@ -1,4 +1,4 @@
-package com.horiaconstantin.kalah.pojo;
+package com.horiaconstantin.kalah.game;
 
 public enum Player {
     P1,

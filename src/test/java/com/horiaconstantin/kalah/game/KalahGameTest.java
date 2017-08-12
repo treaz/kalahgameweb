@@ -1,8 +1,9 @@
-package com.horiaconstantin.kalah;
+package com.horiaconstantin.kalah.game;
 
 import com.horiaconstantin.kalah.exceptions.IllegalMoveException;
-import com.horiaconstantin.kalah.pojo.KalahBoard;
-import com.horiaconstantin.kalah.pojo.Player;
+import com.horiaconstantin.kalah.game.KalahBoard;
+import com.horiaconstantin.kalah.game.KalahGame;
+import com.horiaconstantin.kalah.game.Player;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -10,7 +11,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static com.horiaconstantin.kalah.KalahGame.*;
+import static com.horiaconstantin.kalah.game.KalahGame.*;
 
 public class KalahGameTest {
 
@@ -229,6 +230,6 @@ public class KalahGameTest {
     public void getWinnerBeforeEnd() {
         KalahGame game = new KalahGame();
 
-        assertThatThrownBy(() -> game.getWinner()).isInstanceOf(RuntimeException.class).hasMessage(GAME_STILL_RUNNING);
+        assertThatThrownBy(game::getWinner).isInstanceOf(RuntimeException.class).hasMessage(GAME_STILL_RUNNING);
     }
 }

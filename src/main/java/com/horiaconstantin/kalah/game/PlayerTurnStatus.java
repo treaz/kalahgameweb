@@ -1,13 +1,11 @@
-package com.horiaconstantin.kalah;
+package com.horiaconstantin.kalah.game;
 
-import com.horiaconstantin.kalah.pojo.Player;
-
-import static com.horiaconstantin.kalah.pojo.KalahBoard.*;
+import static com.horiaconstantin.kalah.game.KalahBoard.*;
 
 /**
  * Holds the state of the current player move
  */
-public class PlayerTurnStatus {
+class PlayerTurnStatus {
     private int indexOfPitInWhichNextStoneWillBePut;
 
     private int stonesInHand;
@@ -16,7 +14,7 @@ public class PlayerTurnStatus {
 
     private final Player playingPlayer;
 
-    public PlayerTurnStatus(int indexOfPitInWhichNextStoneWillBePut, int stonesInHand, Player currentPlayer) {
+    PlayerTurnStatus(int indexOfPitInWhichNextStoneWillBePut, int stonesInHand, Player currentPlayer) {
         this.indexOfPitInWhichNextStoneWillBePut = indexOfPitInWhichNextStoneWillBePut;
         this.stonesInHand = stonesInHand;
         this.currentPlayer = currentPlayer;
@@ -25,26 +23,24 @@ public class PlayerTurnStatus {
     }
 
     /**
-     *
      * @return the index of the pit in which the next stone will be placed
      */
-    public int getCurrentPitIndex() {
+    int getCurrentPitIndex() {
         return indexOfPitInWhichNextStoneWillBePut;
     }
 
     /**
-     *
      * @return the player on which side stones are placed
      */
-    public Player getCurrentPlayer() {
+    Player getCurrentPlayer() {
         return currentPlayer;
     }
 
-    public void decrementStonesInHand() {
+    void decrementStonesInHand() {
         stonesInHand--;
     }
 
-    public boolean hasStonesInHand() {
+    boolean hasStonesInHand() {
         return stonesInHand > 0;
     }
 
@@ -53,30 +49,30 @@ public class PlayerTurnStatus {
      * in his pits, reaches his kalah and still has stones left in his hand, so he needs to put them in the other's
      * player pits
      */
-    public void changeDepositPitLaneIfNeeded() {
-        if (getCurrentPitIndex() > KALAH_INDEX) {
+    void changeDepositPitLaneIfNeeded() {
+        if (getCurrentPitIndex() > KALAH_PIT_INDEX) {
             currentPlayer = getNextPlayer();
             indexOfPitInWhichNextStoneWillBePut = 0;
         }
     }
 
-    public Player getNextPlayer(){
+    Player getNextPlayer() {
         return currentPlayer.getNext();
     }
 
-    public void moveToNextPit(){
+    void moveToNextPit() {
         indexOfPitInWhichNextStoneWillBePut++;
     }
 
-    public int getOpposingPitIndex(){
+    int getOpposingPitIndex() {
         return LAST_PIT_INDEX - getCurrentPitIndex();
     }
 
-    public boolean canPlaceStoneInCurrentPit() {
-        return getCurrentPitIndex() != KALAH_INDEX || getCurrentPlayer().equals(playingPlayer);
+    boolean canPlaceStoneInCurrentPit() {
+        return getCurrentPitIndex() != KALAH_PIT_INDEX || getCurrentPlayer().equals(playingPlayer);
     }
 
-    public boolean placedLastStoneInOwnPit() {
-        return getCurrentPlayer().equals(playingPlayer) && !hasStonesInHand() && getCurrentPitIndex() != KALAH_INDEX;
+    boolean placedLastStoneInOwnPit() {
+        return getCurrentPlayer().equals(playingPlayer) && !hasStonesInHand() && getCurrentPitIndex() != KALAH_PIT_INDEX;
     }
 }
