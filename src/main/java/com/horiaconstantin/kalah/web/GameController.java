@@ -4,11 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.horiaconstantin.kalah.KalahGame;
+import com.horiaconstantin.kalah.exceptions.IllegalMoveException;
 import com.horiaconstantin.kalah.pojo.Player;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,12 +17,12 @@ import java.util.Map;
 @RestController
 public class GameController {
 
-    public static final String SEESION_ATTRIBUTE_KALAH_GAME = "kalahGame";
+    private static final String SESSION_ATTRIBUTE_KALAH_GAME = "kalahGame";
 
     @RequestMapping("/initGame")
     public String initGame(HttpSession httpSession) throws JsonProcessingException {
         KalahGame kalahGame = new KalahGame();
-        httpSession.setAttribute(SEESION_ATTRIBUTE_KALAH_GAME, kalahGame);
+        httpSession.setAttribute(SESSION_ATTRIBUTE_KALAH_GAME, kalahGame);
         return serializeBoardToString(kalahGame);
     }
 
@@ -30,15 +31,9 @@ public class GameController {
             @RequestParam(value = "player") String player,
             @RequestParam(value = "pitIndex") int pitIndex,
             HttpSession httpSession) throws JsonProcessingException {
-        KalahGame kalahGame = (KalahGame) httpSession.getAttribute(SEESION_ATTRIBUTE_KALAH_GAME);
+        KalahGame kalahGame = (KalahGame) httpSession.getAttribute(SESSION_ATTRIBUTE_KALAH_GAME);
         kalahGame.move(Player.valueOf(player), pitIndex);
         return serializeBoardToString(kalahGame);
-    }
-
-    @RequestMapping("/whoseTurnIsIt")
-    public String getPlayerToMove(HttpSession httpSession) throws JsonProcessingException {
-        KalahGame kalahGame = (KalahGame) httpSession.getAttribute(SEESION_ATTRIBUTE_KALAH_GAME);
-        return kalahGame.getPlayerToMove().toString();
     }
 
     private String serializeBoardToString(KalahGame kalahGame) throws JsonProcessingException {
@@ -48,5 +43,11 @@ public class GameController {
         }
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         return ow.writeValueAsString(serializedBoard);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalMoveException.class)
+    public String handleError(HttpServletRequest req, Exception ex) throws JsonProcessingException {
+        return "{\"message\": \""+ex.getMessage()+"\"}";
     }
 }
