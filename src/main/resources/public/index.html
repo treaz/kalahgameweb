@@ -1,0 +1,47 @@
+<!doctype html>
+<html ng-app="app">
+<head>
+    <title>Kalah game</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="app.css"/>
+</head>
+
+<body>
+<div class="container">
+    <h1>Kalah game</h1>
+
+    <div ng-controller="MainController">
+        <div class="table-responsive">
+            <table class="table text-center table-bordered">
+                <tr>
+                    <th colspan="10">Player2</th>
+                </tr>
+                <tr>
+                    <td class="kalah-pit-styling" colspan="2" rowspan="2">{{kalahBoard.P2[6]}}</td>
+                    <td class="col-md-1" ng-repeat="stonesInPit in kalahBoard.P2 | limitTo:6 track by $index">
+                        <a href ng-click="move('P2', 5-$index); getPlayerTurn()">{{ kalahBoard.P2[5-$index]}}</a>
+                    </td>
+                    <td class="kalah-pit-styling" colspan="2" rowspan="2">{{kalahBoard.P1[6]}}</td>
+                </tr>
+                <tr>
+                    <td class="col-md-1" ng-repeat="stonesInPit in kalahBoard.P1 | limitTo:6 track by $index">
+                        <a href ng-click="move('P1', $index); getPlayerTurn()">{{stonesInPit}}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="10">Player1</th>
+                </tr>
+            </table>
+        </div>
+        <div class="alert alert-danger" role="alert" ng-show="gameMessage!=''">
+            {{gameMessage}}
+        </div>
+    </div>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+<script src="app.js"></script>
+<script src="main.controller.js"></script>
+</body>
+</html>
